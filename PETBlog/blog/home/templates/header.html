@@ -1,0 +1,130 @@
+{% block content %}
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark rounded-0 border border-1 border-secondary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'index' %}">OLCSBlog</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- --- --- HOME --- --- -->
+                <li class="nav-item">
+                    <a class="nav-link active icon-link" aria-current="page" href="{% url 'index' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-house" viewBox="0 0 16 16">
+                            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                        </svg>
+                        Home</a>
+                </li>
+                <!-- --- --- CATEGORY --- --- -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle icon-link" href="#" role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-grid" viewBox="0 0 16 16">
+                            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+                        </svg>
+                        Category
+                    </a>
+                    <ul class="dropdown-menu rounded-0">
+                        {% for category in category_urls %}
+                        <li><a class="dropdown-item" href="{% url 'category' category.id %}">{{category.title}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+
+                {% if request.user.is_authenticated %}
+                <!-- --- --- CREATE POST --- --- -->
+                <li class="nav-item active">
+                    <a class="nav-link active icon-link" href="{% url 'post-create' %}" style="margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-plus-lg" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                        </svg>
+                        Create Post</a>
+                </li>
+                <!-- --- --- USER`S PROFILE --- --- -->
+                <li class="nav-item">
+                    <a class=" nav-link active icon-link" style="margin-left: 5px;"
+                       href="{% url 'profile' pk=request.user.pk %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-person" viewBox="0 0 16 16">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                        </svg>
+                        {{request.user.username}}</a>
+                </li>
+                {% endif %}
+
+                {% if request.user.role == 'admin' %}
+                <!-- --- --- ADMIN PANEL --- --- -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link active dropdown-toggle icon-link" href="#" role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-sliders2" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M10.5 1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4H1.5a.5.5 0 0 1 0-1H10V1.5a.5.5 0 0 1 .5-.5ZM12 3.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5Zm-6.5 2A.5.5 0 0 1 6 6v1.5h8.5a.5.5 0 0 1 0 1H6V10a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5ZM1 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 1 8Zm9.5 2a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V13H1.5a.5.5 0 0 1 0-1H10v-1.5a.5.5 0 0 1 .5-.5Zm1.5 2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5Z"/>
+                        </svg>
+                        Admin Panel
+                    </a>
+                    <ul class="dropdown-menu rounded-0">
+                        <!-- --- --- USER LIST(ADMIN) --- --- -->
+                        <li><a class="dropdown-item icon-link" href="{% url 'user-list' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1h-4zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1h-2z"/>
+                            </svg>
+                            User list
+                        </a></li>
+                        <!-- --- --- POST LIST(ADMIN) --- --- -->
+                        <li><a class="dropdown-item icon-link" href="{% url 'admin-post-list' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-card-text" viewBox="0 0 16 16">
+                                <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                                <path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/>
+                            </svg>
+                            Post list
+                        </a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
+            </ul>
+            <!-- --- --- SEARCH FORM --- --- -->
+            <form class="d-flex" role="search" method="get" action="{% url 'search' %}">
+                {% csrf_token %}
+                <input class="form-control me-2 rounded-0" type="search" placeholder="Search" aria-label="Search"
+                       name="query">
+                <button class="btn btn-outline-secondary rounded-0" type="submit">Search</button>
+            </form>
+            <!-- --- --- REGISTRATION/AUTHORIZATION  --- --- -->
+            <ul class="navbar-nav">
+                {% if request.user.is_authenticated %}
+                <!-- --- --- LOGOUT --- --- -->
+                <li class="nav-item">
+                    <a class=" btn btn-outline-secondary rounded-0" style="margin-left: 5px;" href="{% url 'logout' %}">Sign
+                        Out</a> <!--logout-->
+                </li>
+                {% else %}
+                <!-- --- --- LOGIN --- --- -->
+                <li class="nav-item">
+                    <a class=" btn btn-outline-secondary rounded-0" style="margin-left: 5px;" href="{% url 'login' %}">Sign
+                        In</a> <!--login-->
+                </li>
+                <!-- --- --- REGISTRATION --- --- -->
+                <li class="nav-item">
+                    <a class=" btn btn-outline-secondary rounded-0" style="margin-left: 5px;"
+                       href="{% url 'register' %}">Sign Up</a> <!--register-->
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+{% endblock content %}

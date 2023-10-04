@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- --- --- User's information --- --- -->
+<br>
+<h2>{{ user_profile.username }} info:</h2>
+<hr>
+<ul class="list-group border border-dark rounded-1 bg-transparent">
+    <li class="list-group-item border-dark rounded-0 bg-transparent"><h5>Username</h5>
+        <p>{{ user_profile.username }}</p></li>
+    <li class="list-group-item border-dark rounded-0 bg-transparent"><h5>First name</h5>
+        <p>{{ user_profile.first_name }}</p></li>
+    <li class="list-group-item border-dark rounded-0 bg-transparent"><h5>Last name</h5>
+        <p>{{ user_profile.last_name }}</p></li>
+    {% if request.user.role == 'admin' or request.user.role == user_profile%}
+    <li class="list-group-item border-dark rounded-0 bg-transparent"><h5>Email</h5>
+        <p>{{ user_profile.email }}</p></li>
+    {% endif %}
+    <li class="list-group-item border-dark rounded-0 bg-transparent"><h5>Role</h5>
+        <p>{{ user_profile.role }}</p></li>
+    <li class="list-group-item border-dark rounded-0 bg-transparent"><h5>Date joined</h5>
+        <p>{{ user_profile.date_joined }}</p></li>
+</ul>
+<br>
+<!-- --- --- User's publications  --- --- -->
+<h2>{{ user_profile.username }}'s publications:</h2>
+
+<hr>
+{% include 'post_list.html' %}
+
+{% endblock content %}
