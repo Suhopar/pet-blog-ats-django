@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-sy88f-^npdio!v-@*yl(pn0a%(6)beo=gf3sc^9^n7p*p$s4ns
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['pet-blog-a.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['pet-blog-a.herokuapp.com','127.0.0.1'] django-heroku==0.3.1
 
 # Application definition
 
