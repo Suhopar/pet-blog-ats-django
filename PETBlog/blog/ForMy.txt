@@ -1,10 +1,10 @@
 HEROKU
 (venv) C:\Users\Lenovo\Downloads\ВАЖНОЕ(Ярослав)\python_proj\OLC_Systems_proj\PETBlogHeroku\pet-blog-ats\PETBlog\blog>
 git init
-heroku git:remote -a pet-blog-a
+h eroku git:remote -a pet-blog-a
 git add .
 git commit -am "fix reg form"
-git push heroku master
+git push h eroku master
 
 --- venv --- --- ---
 install venv - pip install virtualenv

@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os.path
 from pathlib import Path
-import django_heroku
+# import django_heroku
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -152,7 +152,7 @@ USE_TZ = True
 STATIC_URL = 'blog/static/'
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES = [STATIC_DIR]
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = '/media/'
