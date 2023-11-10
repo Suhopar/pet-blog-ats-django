@@ -81,6 +81,10 @@ class Post(models.Model):
     def number_of_likes(self):
         return self.likes.count()
 
+    def number_of_comments(self):
+        return Comment.objects.filter(post=self).count()
+
+
 
 class Comment(models.Model):
     """
@@ -92,6 +96,7 @@ class Comment(models.Model):
         author (ForeignKey)
         content (TextField)
         date (DateTimeField)
+        likes (ManyToManyField)
         status (CharField) (published or hidden)
 
     """
@@ -111,6 +116,8 @@ class Comment(models.Model):
         auto_now_add=True
     )
 
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='comment_like')
+
     STATUS_CHOICES = [
         ('published', 'Published'),
         ('hidden', 'Hidden'),
@@ -124,3 +131,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment by {self.author.username} on {self.post.title}'
+
+    def number_of_likes(self):
+        return self.likes.count()

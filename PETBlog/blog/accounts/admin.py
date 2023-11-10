@@ -11,15 +11,16 @@ class CustomUserAdmin(BaseUserAdmin):
     Adding the ability to change the role(admin/user).
 
     """
-    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'role')
-    list_filter = ('is_staff', 'role')
+    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'role', 'usual_ban', 'absolute_ban')
+    list_filter = ('is_staff', 'username', 'email', 'role', 'usual_ban', 'absolute_ban')
 
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'user_about', 'profile_image')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
         ('Role', {'fields': ('role',)}),
+        ('Banning', {'fields': ('usual_ban', 'absolute_ban')}),
     )
 
     def role(self, obj):

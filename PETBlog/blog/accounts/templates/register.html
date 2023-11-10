@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-11 col-md-4 mx-auto mt-5">
         <h1>Sign Up</h1>
-        <form method="POST" id="registerForm" action="{% url 'register' %}">
+        <form method="POST" id="registerForm" action="{% url 'register' %}" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
             <div class="form-group">

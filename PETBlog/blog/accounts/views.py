@@ -4,10 +4,10 @@ from django.views.generic import ListView
 
 from django.db.models import Count
 
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, ProfileEditForm
 from .models import CustomUser
 
-from home.models import Post
+from home.models import Post, Comment
 from home.views import paginate_queryset
 
 
@@ -39,18 +39,69 @@ class RegisterView(View):
             role = form.cleaned_data['role']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
+            usual_ban = form.cleaned_data['usual_ban']
+            absolute_ban = form.cleaned_data['absolute_ban']
+            user_about = form.cleaned_data['user_about']
+            print(form.cleaned_data['profile_image'])
+            if 'profile_image' in self.request.FILES:
+                profile_image = self.request.FILES['profile_image']
+                user = CustomUser.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    role=role,
+                    first_name=first_name,
+                    last_name=last_name,
+                    usual_ban=usual_ban,
+                    absolute_ban=absolute_ban,
+                    profile_image=profile_image,
+                    user_about=user_about
+                )
+            else:
+                user = CustomUser.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    role=role,
+                    first_name=first_name,
+                    last_name=last_name,
+                    usual_ban=usual_ban,
+                    absolute_ban=absolute_ban,
+                    user_about=user_about
+                )
 
-            user = CustomUser.objects.create_user(
-                username=username,
-                email=email,
-                password=password,
-                role=role,
-                first_name=first_name,
-                last_name=last_name
-            )
+            # user = CustomUser.objects.create_user(
+            #     username=username,
+            #     email=email,
+            #     password=password,
+            #     role=role,
+            #     first_name=first_name,
+            #     last_name=last_name,
+            #     usual_ban=usual_ban,
+            #     absolute_ban=absolute_ban,
+            #     profile_image=profile_image,
+            #     user_about=user_about
+            # )
             return redirect('index')
         else:
             print(form.errors)
+
+
+class ProfileEditView(View):
+    template_name = 'profile_edit.html'
+
+    def get(self, request, *args, **kwargs):
+        user = CustomUser.objects.filter(id=self.kwargs.get('pk')).first()
+        form = ProfileEditForm(instance=user)
+        return render(request, self.template_name, {'form': form, 'user': user})
+
+    def post(self, request, *args, **kwargs):
+        user = CustomUser.objects.filter(id=self.kwargs.get('pk')).first()
+        form = ProfileEditForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', pk=user.pk)
+        return render(request, self.template_name, {'form': form, 'user': user})
 
 
 class ProfileView(View):
@@ -69,6 +120,7 @@ class ProfileView(View):
         paginated_post_list = paginate_queryset(request, post_list, per_page=10)
         context = {
             'post_list': paginated_post_list,
+            'post_count': (Post.objects.filter(author=user).all()).count(),
             'user_profile': user
         }
         return render(request, self.template_name, context)
@@ -92,6 +144,10 @@ class UserListView(ListView):
             user_list = self.sort_users(sort_by, sort_dir)
         else:
             user_list = CustomUser.objects.all()
+
+        for user in user_list:
+            user.num_posts = user.post_set.count()
+
 
         paginated_user_list = paginate_queryset(request, user_list, per_page=10)
         context = {
@@ -223,9 +279,11 @@ class PostListView(ListView):
         elif sort_by == 'category':
             return Post.objects.order_by('category__title' if sort_dir == 'asc' else '-category__title')
         elif sort_by == 'likes':
-            return Post.objects.annotate(like_count=Count('likes__id')).order_by(field, 'title').distinct()
+            return Post.objects.annotate(num_likes=Count('likes')).order_by('num_likes' if sort_dir == 'asc' else '-num_likes')
+            # return Post.objects.annotate(like_count=Count('likes__id')).order_by(field, 'title').distinct()
         elif sort_by == 'comment':
-            return Post.objects.annotate(comment_count=Count('comment__id')).order_by(field, 'title').distinct()
+            return Post.objects.annotate(num_comments=Count('comment')).order_by('num_comments' if sort_dir == 'asc' else '-num_comments')
+            # return Post.objects.annotate(comment_count=Count('comment__id')).order_by(field, 'title').distinct()
         elif sort_by == 'hidden':
             return Post.objects.filter(status='hidden')
         elif sort_by == 'published':
@@ -240,4 +298,22 @@ class PostListView(ListView):
         if self.request.user.role != 'admin':
             return redirect('index')
 
+        return super().dispatch(*args, **kwargs)
+
+
+class LikedPostsView(View):
+    template_name = 'user_like_post_list.html'
+
+    def get(self, request):
+        liked_posts = Post.objects.filter(likes=request.user)
+        paginated_post_list = paginate_queryset(request, liked_posts, per_page=10)
+        context = {
+            'post_list': paginated_post_list,
+            'post_count': (Post.objects.all()).count()
+        }
+        return render(request, self.template_name, context)
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('index')
         return super().dispatch(*args, **kwargs)

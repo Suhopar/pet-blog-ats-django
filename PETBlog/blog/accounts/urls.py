@@ -5,7 +5,9 @@ from .views import (
     UserListView,
     PostListView,
     UserRemoveView,
-    UserChangeRoleView
+    UserChangeRoleView,
+    LikedPostsView,
+    ProfileEditView,
 )
 from django.contrib.auth import views as auth_views
 
@@ -38,11 +40,16 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='logout.html'), name='logout'),
 
     path('profile/<int:pk>/', ProfileView.as_view(), name='profile'),
+    path('profile/edit/<int:pk>/', ProfileEditView.as_view(), name='profile-edit'),
 
     path('remove-user/<int:pk>/', UserRemoveView.as_view(), name='remove-user'),
     path('change-user-role/<int:pk>/', UserChangeRoleView.as_view(), name='change-user-role'),
 
     path('users/', UserListView.as_view(), name='user-list'),
     path('admin-post-list/', PostListView.as_view(), name='admin-post-list'),
+
+    path('user-like-post-list/', LikedPostsView.as_view(), name='user-like-post-list'),
+
+
 
 ]

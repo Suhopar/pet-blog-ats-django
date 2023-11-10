@@ -9,8 +9,10 @@ from .views import (
     SearchView,
     CategoryView,
     PostLikeView,
+    TopTenView,
     CommentCreateView,
     RemoveCommentView,
+    CommentLikeView,
     AboutView
 )
 """
@@ -63,9 +65,12 @@ urlpatterns = [
     path('post/<int:pk>/change_status/', PostStatusChangeView.as_view(), name='post-change-status'),
     path('like/<int:pk>/', PostLikeView.as_view(), name='post-like'),
 
+
     path('post/<int:pk>/comment/', CommentCreateView.as_view(), name='add-comment'),
     path('comment/<int:pk>/remove/', RemoveCommentView.as_view(), name='remove-comment'),
+    path('like_comment/<int:pk>/', CommentLikeView.as_view(), name='like-comment'),
 
+    path('top_ten/', TopTenView.as_view(), name='top-ten'),
     path('search/', SearchView.as_view(), name='search'),
     path('category/<pk>/', CategoryView.as_view(), name='category'),
 

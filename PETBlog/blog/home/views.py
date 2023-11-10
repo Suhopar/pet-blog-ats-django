@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
@@ -38,7 +39,7 @@ class Index(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post_list = Post.objects.filter(status='published')
+        post_list = Post.objects.filter(status='published').order_by('-date')
         context['post_list'] = paginate_queryset(self.request, post_list, per_page=10)
 
         return context
@@ -65,6 +66,10 @@ class PostDetailView(DetailView):
         liked = False
         if post.likes.filter(id=self.request.user.id).exists():
             liked = True
+
+        for comment in context['comments']:
+            comment.liked = comment.likes.filter(id=self.request.user.id).exists()
+
         context['number_of_likes'] = post.number_of_likes()
         context['post_is_liked'] = liked
 
@@ -300,6 +305,29 @@ class RemoveCommentView(View):
         return super().dispatch(*args, **kwargs)
 
 
+class CommentLikeView(View):
+
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+
+        if comment.likes.filter(id=request.user.id).exists():
+            comment.likes.remove(request.user)
+            liked = False
+        else:
+            comment.likes.add(request.user)
+            liked = True
+
+        likes_count = comment.likes.count()
+        print(comment, "id - ", comment.id, "liked - ", liked, "comment_likes_count - ", likes_count)
+
+        return JsonResponse({'comment_liked': liked, 'comment_likes_count': likes_count})
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('index')
+        return super().dispatch(*args, **kwargs)
+
+
 class SearchView(View):
     """
 
@@ -311,12 +339,14 @@ class SearchView(View):
 
     def get(self, request):
         form = SearchForm(request.GET)
-        results = None
+        post_list = None
 
         if form.is_valid():
             query = form.cleaned_data['query']
-            results = Post.objects.filter(title__contains=query)
-        return render(request, self.template_name, {'form': form, 'post_list': results})
+            post_list = Post.objects.filter(status='published', title__contains=query)
+        # paginated_post_list = paginate_queryset(request, post_list, per_page=10)
+        # print('-----------------', paginated_post_list, '=============', post_list)
+        return render(request, self.template_name, {'form': form, 'post_list': post_list})
 
 
 class CategoryView(View):
@@ -331,10 +361,24 @@ class CategoryView(View):
 
     def get(self, request, *args, **kwargs):
         category = Category.objects.filter(id=self.kwargs.get('pk')).first()
-        post_list = Post.objects.filter(category=category)
+        post_list = Post.objects.filter(status='published', category=category)
         paginated_post_list = paginate_queryset(request, post_list, per_page=9)
 
         return render(request, self.template_name, {'category': category, 'post_list': paginated_post_list})
+
+
+class TopTenView(View):
+    """
+
+    View for displaying the TOP 10 page.
+
+    """
+    template_name = 'post_top_ten.html'
+
+    def get(self, request):
+        post_list = Post.objects.filter(status='published').annotate(num_likes=Count('likes')).order_by('-num_likes')[:10]
+        return render(request, self.template_name, {'post_list': post_list})
+
 
 
 class AboutView(View):

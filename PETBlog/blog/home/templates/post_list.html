@@ -1,17 +1,19 @@
 <div class="container mt-4">
-    <div class="row justify-content-center">
+    <div class="row row-cols-2 justify-content-center">
 
 
         {% if '/account/profile/' in request.path %}
         <!-- --- --- Profile post list --- --- -->
         {% if post_list %}
         <table class="table caption-top">
-            <caption>List Posts of user</caption>
+            <caption>List Posts of user ({{post_count}})</caption>
             <thead>
             <tr>
                 <th scope="col">Title</th>
                 <th scope="col">Category</th>
                 <th scope="col">Date</th>
+                <th scope="col">Likes</th>
+                <th scope="col">Comments</th>
                 <th scope="col">Do</th>
             </tr>
             </thead>
@@ -21,6 +23,8 @@
                 <td>{{ post.title }}</td>
                 <td>{{post.category.title}}</td>
                 <td>{{ post.date }}</td>
+                <td>{{ post.likes.count }}</td>
+                <td>{{ post.comment_set.count }}</td>
                 <td>
                     <!-- --- --- BUTTONS --- --- -->
                     <div class="btn-group" role="group" aria-label="Post Actions">
@@ -64,35 +68,86 @@
         {% else %}
         <!-- --- --- Just post list --- --- -->
         {% for post in post_list %}
-        <div class="card mb-3" style="max-width: 540px;">
+        <div class="card mb-3" style=" padding: 0;">
             <div class="row g-0 ">
-                {% if post.image %}
-                <!-- --- --- ADD IMAGE --- --- -->
-                <div class="col-md-4 d-flex align-items-center">
-                    <img src="{{ post.image.url }}" class="img-fluid rounded mx-auto d-block" alt="{{ post.title }}">
+                <div class="col-md-4  d-flex align-items-center">
+                    {% if post.image %}
+                    <div class="mx-auto ">
+                        <img src="{{ post.image.url }}" class="img-fluid rounded" alt="{{ post.title }}">
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                <div class="col-md-8">
+                <div class="col-md-8 ">
                     <div class="card-body">
-                        <h5 class="card-title text-center"><a href="{% url 'post' post.id %}"
-                                                              class="link-dark link-offset-2 link-underline-opacity-0 ">
+                        <h5 class="card-title"><a href="{% url 'post' post.id %}"
+                                                  class="link-dark link-offset-2 link-underline-opacity-0">
                             {{ post.title }}</a></h5>
-                        <p class="card-text text-center"><a href="{% url 'post' post.id %}"
-                                                            class="link-dark link-offset-2 link-underline-opacity-0 ">
-                            {{ post.content|truncatewords:30 }}</a></p>
-                        <a class="dropdown-item"
-                           href="{% url 'category' post.category.id %}">{{post.category.title}}</a>
-                        <strong class="text-secondary">
-                            {{ post.number_of_likes }} Like{{ post.number_of_likes|pluralize }}</strong></p>
-                        <hr class="my-4">
-                        <p class="card-text"><small class="text-body-secondary">
-                            <a class="link-dark link-offset-2 link-underline-opacity-0 "
-                               href="{% url 'profile' pk=post.author.pk %}">
-                                {{ post.author }}</a> - {{ post.date }} </small></p>
+                        <p class="card-text">{{ post.content|truncatewords:30 }}</p>
                     </div>
                 </div>
             </div>
+            <div class="card-footer mt-auto ">
+                <div class="d-inline">
+                    <a class="dropdown-item d-inline" href="{% url 'category' post.category.id %}">
+                        {{ post.category.title }}</a>
+                    |
+                    <span class="d-inline">{{ post.date }}</span>
+                </div>
+                <div class="float-end icon-link">
+                    <strong class="text-secondary ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-right" viewBox="0 0 16 16">
+                          <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
+                        </svg> {{ post.number_of_likes }} |</strong>
+                    <strong class="text-secondary ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                          <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                        </svg> {{ post.number_of_comments }} |</strong>
+<!--                    post.number_of_comments|pluralize -->
+
+                    <small class="text-secondary">
+                        <a class="link-dark link-offset-2 link-underline-opacity-0"
+                           href="{% url 'profile' pk=post.author.pk %}">
+                            <img src="{{ post.author.profile_image.url }}" alt="" width="30" height="30"
+                                 class="rounded">
+                            {{ post.author }}
+                        </a>
+                    </small>
+
+                </div>
+            </div>
         </div>
+
+
+        <!--        <div class="card" style="max-width: 540px;">-->
+        <!--            <div class="row g-0 ">-->
+        <!--                {% if post.image %}-->
+        <!--                &lt;!&ndash; -&#45;&#45; -&#45;&#45; ADD IMAGE -&#45;&#45; -&#45;&#45; &ndash;&gt;-->
+        <!--                <div class="col-md-4 d-flex align-items-center">-->
+        <!--                    <img src="{{ post.image.url }}" class="img-fluid rounded mx-auto d-block" alt="{{ post.title }}">-->
+        <!--                </div>-->
+        <!--                {% endif %}-->
+        <!--                <div class="col-md-8">-->
+        <!--                    <div class="card-body">-->
+        <!--                        <h5 class="card-title text-center"><a href="{% url 'post' post.id %}"-->
+        <!--                                                              class="link-dark link-offset-2 link-underline-opacity-0 ">-->
+        <!--                            {{ post.title }}</a></h5>-->
+        <!--                        <p class="card-text text-center"><a href="{% url 'post' post.id %}"-->
+        <!--                                                            class="link-dark link-offset-2 link-underline-opacity-0 ">-->
+        <!--                            {{ post.content|truncatewords:30 }}</a></p>-->
+        <!--                        <a class="dropdown-item"-->
+        <!--                           href="{% url 'category' post.category.id %}">{{post.category.title}}</a>-->
+        <!--                        <strong class="text-secondary">-->
+        <!--                            {{ post.number_of_likes }} Like{{ post.number_of_likes|pluralize }}</strong></p>-->
+        <!--                        <hr class="my-4">-->
+        <!--                        <p class="card-text"><small class="text-body-secondary">-->
+        <!--                            <a class="link-dark link-offset-2 link-underline-opacity-0 "-->
+        <!--                               href="{% url 'profile' pk=post.author.pk %}">-->
+        <!--                                <img src="{{ post.author.profile_image.url }}" alt="" width="30" height="30" class="rounded">-->
+        <!--                                {{ post.author }}</a> - {{ post.date }} </small></p>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
 
 
         {% empty %}
