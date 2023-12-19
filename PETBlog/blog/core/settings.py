@@ -104,7 +104,7 @@ DATABASES = {
 
         'USER': 'postgres',
 
-        'PASSWORD': 'ZV1sDu9TXBy7MstjVgwy',
+        'PASSWORD': '',
 
         'HOST': 'containers-us-west-64.railway.app',
 
