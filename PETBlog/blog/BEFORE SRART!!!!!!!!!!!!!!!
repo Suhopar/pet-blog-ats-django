@@ -3,7 +3,7 @@
 3. Run the fill_database.py file before starting to populate the database.
 4. Use adminuser as a super user {
         username='adminuser',
-        password='AdminU0110*',
+        password='AU0110*',
         role='admin',
         first_name='Admin',
         last_name='Userinsky',
